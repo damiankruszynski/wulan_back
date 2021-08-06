@@ -29,7 +29,6 @@ public class HomeController {
     @GetMapping("/files")
     public List<FilesJson> getFilesNamesAndTypes(@RequestParam String path) throws IOException {
         List<String> listFileByPath;
-        log.error(path);
         if(path.equals("")){
            listFileByPath= homeMapper.getListFileByPath(pathToPublicFolder);
         }else{

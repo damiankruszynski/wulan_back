@@ -28,7 +28,7 @@ public class HomeMapper {
             return setFileType(filePath).name();
     }
 
-    private FileType setFileType(String fileName){
+    public FileType setFileType(String fileName){
         String extension = FilenameUtils.getExtension(fileName);
         extension = extension.toUpperCase();
         if(extension.isEmpty()){
@@ -42,7 +42,7 @@ public class HomeMapper {
 
     public List<String> getListFileByPath(String path)  {
         File f[] = new File(path).listFiles();
-        if(f.length == 0){ return new ArrayList<>();}
+        if(f == null){ return new ArrayList<>();}
         return Arrays.stream(f).map( s -> s.getAbsolutePath()).collect(Collectors.toList());
     }
 
