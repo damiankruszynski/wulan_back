@@ -11,7 +11,7 @@
 	<groupId>com.dk</groupId>
 	<artifactId>wulan_back</artifactId>
 	<version>01</version>
-	<name>WuLan_back</name>
+	<name>wuLan_back</name>
 	<packaging>war</packaging>
 	<description>LocalHost streamer by Spring Boot</description>
 	<properties>
