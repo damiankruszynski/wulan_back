@@ -9,4 +9,5 @@ public class FilesJson {
     private String fileName;
     private String fileType;
     private String filePath;
+    private String subPath;
 }

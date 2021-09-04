@@ -9,15 +9,12 @@ import org.springframework.stereotype.Component;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 @Slf4j
@@ -48,5 +45,24 @@ public class HomeMapper {
 
     public String getFileName(String filePath){
         return FilenameUtils.getName(filePath);
+    }
+
+    public String getSubPathForFile(String fileName, String path){
+        File f = new File(path);
+        if(f == null){ return "";}
+        String fileNameWithOutExtension  = FilenameUtils.removeExtension(fileName);
+        log.error(fileNameWithOutExtension);
+        File[] matchingFiles = f.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.startsWith(fileNameWithOutExtension)!= name.endsWith("mp4");
+            }
+        });
+        if(Arrays.stream(matchingFiles).findFirst().map(s -> s.getAbsolutePath()).isPresent()){
+            log.error("sciezka do napisow");
+            log.error(Arrays.stream(matchingFiles).findFirst().map(s -> s.getAbsolutePath()).get());
+            return Arrays.stream(matchingFiles).findFirst().map(s -> s.getAbsolutePath()).get();
+        }else{
+         return "";
+        }
     }
 }

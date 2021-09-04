@@ -35,7 +35,7 @@ public class HomeController {
            listFileByPath= homeMapper.getListFileByPath(path);
         }
         return  listFileByPath.stream()
-                .map( s -> new FilesJson(homeMapper.getFileName(s), homeMapper.getTypeOfFileByName(s), s))
+                .map( s -> new FilesJson(homeMapper.getFileName(s), homeMapper.getTypeOfFileByName(s), s, homeMapper.getSubPathForFile(homeMapper.getFileName(s),s) ))
                 .collect(Collectors.toList());
     }
 
