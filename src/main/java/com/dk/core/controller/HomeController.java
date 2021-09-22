@@ -4,7 +4,7 @@ import com.dk.core.mapper.HomeMapper;
 import com.dk.core.payload.FilesJson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class HomeController {
            listFileByPath= homeMapper.getListFileByPath(path);
         }
         return  listFileByPath.stream()
-                .map( s -> new FilesJson(homeMapper.getFileName(s), homeMapper.getTypeOfFileByName(s), s, homeMapper.getSubPathForFile(homeMapper.getFileName(s),s) ))
+                .map( s -> new FilesJson(homeMapper.getFileName(s), homeMapper.getTypeOfFileByName(s), s, homeMapper.getSubPathForFile(homeMapper.getFileName(s),path) ))
                 .collect(Collectors.toList());
     }
 

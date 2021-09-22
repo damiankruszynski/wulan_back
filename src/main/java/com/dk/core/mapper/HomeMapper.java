@@ -10,10 +10,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -50,19 +47,24 @@ public class HomeMapper {
     public String getSubPathForFile(String fileName, String path){
         File f = new File(path);
         if(f == null){ return "";}
+        log.error("SUBPATH: "+path);
         String fileNameWithOutExtension  = FilenameUtils.removeExtension(fileName);
-        log.error(fileNameWithOutExtension);
-        File[] matchingFiles = f.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.startsWith(fileNameWithOutExtension)!= name.endsWith("mp4");
+        FilenameFilter filter = new FilenameFilter() {
+            public boolean accept (File dir, String name) {
+                return name.startsWith(fileNameWithOutExtension) != name.endsWith("mp4");
             }
-        });
-        if(Arrays.stream(matchingFiles).findFirst().map(s -> s.getAbsolutePath()).isPresent()){
-            log.error("sciezka do napisow");
-            log.error(Arrays.stream(matchingFiles).findFirst().map(s -> s.getAbsolutePath()).get());
-            return Arrays.stream(matchingFiles).findFirst().map(s -> s.getAbsolutePath()).get();
+        };
+        File[] matchingFiles = f.listFiles(filter);
+        if(matchingFiles != null){
+            Optional<File> firstFile = Arrays.stream(matchingFiles).findFirst();
+            try{
+                return firstFile.get().getAbsolutePath();
+            }catch (NoSuchElementException noSuchElementException){
+                return "";
+            }
         }else{
-         return "";
+            return "";
         }
+
     }
 }

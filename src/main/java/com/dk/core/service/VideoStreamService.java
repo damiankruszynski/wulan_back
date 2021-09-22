@@ -2,20 +2,22 @@ package com.dk.core.service;
 
 import com.dk.core.mapper.HomeMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.Response;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.dk.core.constants.ApplicationConstants.*;
 
@@ -24,6 +26,22 @@ import static com.dk.core.constants.ApplicationConstants.*;
 public class VideoStreamService {
 
     private HomeMapper homeMapper;
+
+
+    public ResponseEntity<StreamingResponseBody> prepareSubs(String filePath) throws FileNotFoundException {
+        InputStream inputStream = new FileInputStream(new File(filePath));
+        StreamingResponseBody responseBody = outputStream -> {
+            int numberOfBytesToWrite;
+            byte[] data = new byte[1024];
+            while ((numberOfBytesToWrite = inputStream.read(data, 0, data.length)) != -1) {
+                outputStream.write(data, 0, numberOfBytesToWrite);
+            }
+            inputStream.close();
+        };
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(responseBody);
+    }
 
     @Autowired
     public VideoStreamService(HomeMapper homeMapper){
