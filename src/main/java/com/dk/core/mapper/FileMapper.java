@@ -3,7 +3,7 @@ package com.dk.core.mapper;
 
 
 
-import com.dk.core.payload.FileType;
+import com.dk.core.constants.FileType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.apache.commons.io.FilenameUtils;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class HomeMapper {
+public class FileMapper {
 
     public String getTypeOfFileByName(String filePath){
             return setFileType(filePath).name();
@@ -35,9 +35,9 @@ public class HomeMapper {
     }
 
     public List<String> getListFileByPath(String path)  {
-        File f[] = new File(path).listFiles();
+        File[] f = new File(path).listFiles();
         if(f == null){ return new ArrayList<>();}
-        return Arrays.stream(f).map( s -> s.getAbsolutePath()).collect(Collectors.toList());
+        return Arrays.stream(f).map(File::getAbsolutePath).collect(Collectors.toList());
     }
 
     public String getFileName(String filePath){
@@ -46,19 +46,13 @@ public class HomeMapper {
 
     public String getSubPathForFile(String fileName, String path){
         File f = new File(path);
-        if(f == null){ return "";}
-        log.error("SUBPATH: "+path);
         String fileNameWithOutExtension  = FilenameUtils.removeExtension(fileName);
-        FilenameFilter filter = new FilenameFilter() {
-            public boolean accept (File dir, String name) {
-                return name.startsWith(fileNameWithOutExtension) != name.endsWith("mp4");
-            }
-        };
+        FilenameFilter filter = (dir, name) -> name.startsWith(fileNameWithOutExtension) != name.endsWith("mp4");
         File[] matchingFiles = f.listFiles(filter);
         if(matchingFiles != null){
             Optional<File> firstFile = Arrays.stream(matchingFiles).findFirst();
             try{
-                return firstFile.get().getAbsolutePath();
+                return firstFile.map(File::getAbsolutePath).orElse("");
             }catch (NoSuchElementException noSuchElementException){
                 return "";
             }

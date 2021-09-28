@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class FilesJson {
+public class FileResponse {
     private String fileName;
     private String fileType;
     private String filePath;

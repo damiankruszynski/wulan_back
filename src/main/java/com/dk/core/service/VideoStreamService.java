@@ -1,23 +1,18 @@
 package com.dk.core.service;
 
-import com.dk.core.mapper.HomeMapper;
+import com.dk.core.mapper.FileMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.connector.Response;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.dk.core.constants.ApplicationConstants.*;
 
@@ -25,27 +20,11 @@ import static com.dk.core.constants.ApplicationConstants.*;
 @Service
 public class VideoStreamService {
 
-    private HomeMapper homeMapper;
-
-
-    public ResponseEntity<StreamingResponseBody> prepareSubs(String filePath) throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream(new File(filePath));
-        StreamingResponseBody responseBody = outputStream -> {
-            int numberOfBytesToWrite;
-            byte[] data = new byte[1024];
-            while ((numberOfBytesToWrite = inputStream.read(data, 0, data.length)) != -1) {
-                outputStream.write(data, 0, numberOfBytesToWrite);
-            }
-            inputStream.close();
-        };
-        return ResponseEntity.ok()
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(responseBody);
-    }
+    private final FileMapper fileMapper;
 
     @Autowired
-    public VideoStreamService(HomeMapper homeMapper){
-        this.homeMapper =  homeMapper;
+    public VideoStreamService(FileMapper fileMapper){
+        this.fileMapper = fileMapper;
     }
 
     /**
@@ -64,7 +43,7 @@ public class VideoStreamService {
             fileSize = getFileSize(filePath);
             if (range == null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .header(CONTENT_TYPE, VIDEO_CONTENT + homeMapper.setFileType(filePath))
+                        .header(CONTENT_TYPE, VIDEO_CONTENT + fileMapper.setFileType(filePath))
                         .header(CONTENT_LENGTH, String.valueOf(fileSize))
                         .body(readByteRange(filePath, rangeStart, fileSize - 1)); // Read the object and convert it as bytes
             }
@@ -85,7 +64,7 @@ public class VideoStreamService {
         }
         String contentLength = String.valueOf((rangeEnd - rangeStart) + 1);
         return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                .header(CONTENT_TYPE, VIDEO_CONTENT + homeMapper.setFileType(filePath))
+                .header(CONTENT_TYPE, VIDEO_CONTENT + fileMapper.setFileType(filePath))
                 .header(ACCEPT_RANGES, BYTES)
                 .header(CONTENT_LENGTH, contentLength)
                 .header(CONTENT_RANGE, BYTES + " " + rangeStart + "-" + rangeEnd + "/" + fileSize)
