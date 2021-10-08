@@ -18,11 +18,13 @@ public final class RegisterRequest {
     private  Set<String> role;
     private  String password;
     private  LocalDate dateAccountCreated;
+    private  String code;
 
-    public RegisterRequest(String username, Set<String> role, String password){
+    public RegisterRequest(String username, Set<String> role, String password, String code){
         this.username = username;
         this.role = role;
         this.password = password;
+        this.code = code;
     }
 
 }

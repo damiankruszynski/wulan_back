@@ -7,19 +7,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Component
 public class MovieTimeWatchedDTO {
-    private String pathFile;
+    @NotBlank(message = "filePath can't be blank")
+    private String filePath;
     private Long timeWatched;
+    @NotNull(message = "profileId can't be empty")
+    private Long profileId;
 
     @Override
     public String toString() {
         return "MovieTimeWatchedDTO{" +
-                "pathFile='" + pathFile + '\'' +
+                "filePath='" + filePath + '\'' +
                 ", timeWatched=" + timeWatched +
                 '}';
     }

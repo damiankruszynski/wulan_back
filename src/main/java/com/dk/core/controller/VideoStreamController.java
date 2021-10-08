@@ -2,6 +2,7 @@ package com.dk.core.controller;
 
 import com.dk.core.domain.MovieTimeWatched;
 import com.dk.core.domain.MovieTimeWatchedDTO;
+import com.dk.core.exception.NoDefinedTimeWatchedException;
 import com.dk.core.mapper.MovieTimeWatchedMapper;
 import com.dk.core.service.MovieTimeWatchedService;
 import com.dk.core.service.VideoStreamService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
 import java.util.NoSuchElementException;
 
 
@@ -41,24 +43,20 @@ public class VideoStreamController {
     }
 
     @PutMapping("/saveWatchedTimeMovie")
-    public ResponseEntity<MovieTimeWatchedDTO>  saveFileTimeWatched(@RequestBody MovieTimeWatchedDTO movieTimeWatchedDTO){
-        log.error(movieTimeWatchedDTO.toString());
-        if(movieTimeWatchedDTO.getPathFile() == null || movieTimeWatchedDTO.getTimeWatched() == null){
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<MovieTimeWatchedDTO>  saveFileTimeWatched(@Valid @RequestBody MovieTimeWatchedDTO movieTimeWatchedDTO){
+        if(movieTimeWatchedDTO.getTimeWatched() == null){
+            throw new NoDefinedTimeWatchedException();
         }
-        try{
-            MovieTimeWatched movieTimeWatchedResponse = movieTimeWatchedService.setTimeWatched(
-                    movieTimeWatchedMapper.mapDtoToMovieTimeWatched(movieTimeWatchedDTO)).get();
-            log.error(movieTimeWatchedResponse.toString());
-            return ResponseEntity.ok(movieTimeWatchedMapper.mapMovieTimeWatchedToDTO(movieTimeWatchedResponse));
-        }catch (NoSuchElementException noSuchElementException){
-            return ResponseEntity.noContent().build();
-        }
+        MovieTimeWatched movieTimeWatchedResponse = movieTimeWatchedService.setTimeWatched(
+                movieTimeWatchedMapper.mapToMovieTimeWatched(movieTimeWatchedDTO)).get();
+        return ResponseEntity.ok(movieTimeWatchedMapper.mapToMovieTimeWatchedDTO(movieTimeWatchedResponse));
+
     }
 
     @GetMapping("/getWatchedTimeMovie")
-    public Long getFileTimeWatched(@RequestParam("filePath") String filePath){
-           return movieTimeWatchedService.getTimeWatched(filePath);
+    public Long getFileTimeWatched(@RequestParam String filePath, @RequestParam Long profileId){
+           @Valid MovieTimeWatchedDTO movieTimeWatchedDTO = new MovieTimeWatchedDTO(filePath,null,profileId);
+           return movieTimeWatchedService.getTimeWatched(movieTimeWatchedMapper.mapToMovieTimeWatched(movieTimeWatchedDTO));
     }
 
 

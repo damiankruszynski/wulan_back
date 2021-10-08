@@ -1,5 +1,6 @@
 package com.dk.security.login.services;
 
+import com.dk.core.domain.Profile;
 import com.dk.security.login.domain.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -20,16 +21,18 @@ public class UserDetailsImpl implements UserDetails {
     private final String username;
     @JsonIgnore
     private final String password;
+    private final List<Profile> profileList;
 
 
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(final Long id, final String username, final String password,
-                           final Collection<? extends GrantedAuthority> authorities) {
+                           final Collection<? extends GrantedAuthority> authorities, final List<Profile> profileList) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.authorities = authorities;
+        this.profileList = profileList;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -41,7 +44,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                authorities);
+                authorities,
+                user.getProfileList());
     }
 
 

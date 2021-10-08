@@ -1,6 +1,8 @@
 package com.dk.core.service;
 
 import com.dk.core.domain.MovieTimeWatched;
+import com.dk.core.domain.MovieTimeWatchedDTO;
+import com.dk.core.domain.Profile;
 import com.dk.core.repository.MovieTimeWatchedRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,12 @@ public class MovieTimeWatchedService {
         this.movieTimeWatchedRepository = movieTimeWatchedRepository;
     }
 
+    public Optional<MovieTimeWatched> findByPathAndProfile(String pathFile, Profile profile){
+        return movieTimeWatchedRepository.findByFilePathAndProfile(pathFile, profile);
+    }
+
     public Optional<MovieTimeWatched> setTimeWatched(MovieTimeWatched movieTimeWatched){
         try{
-             log.error("setTimeWatched = "+ movieTimeWatched.toString());
             return Optional.of(movieTimeWatchedRepository.save(movieTimeWatched));
         }catch (Exception e){
             log.error(e.getMessage());
@@ -30,11 +35,11 @@ public class MovieTimeWatchedService {
         }
     }
 
-    public Long getTimeWatched(String pathFile){
+    public Long getTimeWatched(MovieTimeWatched movieTimeWatched){
         try {
-            return movieTimeWatchedRepository.findByPathFile(pathFile).get().getTimeWatched();
+            return movieTimeWatchedRepository
+                    .findByFilePathAndProfile(movieTimeWatched.getFilePath(), movieTimeWatched.getProfile()).get().getTimeWatched();
         }catch (NoSuchElementException noSuchElementException){
-            log.info(noSuchElementException.getMessage());
             return 0L;
         }
     }

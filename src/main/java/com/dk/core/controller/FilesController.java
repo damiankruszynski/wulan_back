@@ -34,7 +34,8 @@ public class FilesController {
            listFileByPath= fileMapper.getListFileByPath(path);
         }
         return  listFileByPath.stream()
-                .map( s -> new FileResponse(fileMapper.getFileName(s), fileMapper.getTypeOfFileByName(s), s, fileMapper.getSubPathForFile(fileMapper.getFileName(s),path) ))
+                .map( s -> new FileResponse(fileMapper.getFileName(s), fileMapper.getTypeOfFileByName(s), s,
+                        fileMapper.getSubPathForFile(fileMapper.getFileName(s),path) ))
                 .collect(Collectors.toList());
     }
 

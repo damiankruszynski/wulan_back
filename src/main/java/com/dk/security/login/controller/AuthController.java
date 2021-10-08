@@ -1,6 +1,9 @@
 package com.dk.security.login.controller;
 
+import com.dk.core.exception.UserWithThisNameExist;
+import com.dk.security.exception.NoCodeOrWasUsedException;
 import com.dk.security.jwt.JwtUtils;
+import com.dk.security.login.domain.Code;
 import com.dk.security.login.domain.ERole;
 import com.dk.security.login.domain.Role;
 import com.dk.security.login.domain.User;
@@ -9,6 +12,7 @@ import com.dk.security.login.payload.request.RegisterRequest;
 import com.dk.security.login.payload.response.JwtResponse;
 import com.dk.security.login.repository.RoleRepository;
 import com.dk.security.login.repository.UserRepository;
+import com.dk.security.login.services.CodeService;
 import com.dk.security.login.services.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,15 +40,17 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
     private final JwtUtils jwtUtils;
+    private final CodeService codeService;
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository,
-                          PasswordEncoder encoder, JwtUtils jwtUtils){
+                          PasswordEncoder encoder, JwtUtils jwtUtils, CodeService codeService){
         this.authenticationManager =authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.encoder = encoder;
         this.jwtUtils = jwtUtils;
+        this.codeService = codeService;
     }
 
 
@@ -70,11 +77,28 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest registerRequest) {
+
+        if(userRepository.findByUsername(registerRequest.getUsername()).isPresent()){
+            throw new UserWithThisNameExist();
+        }
+
+        Optional<Code>  code =  codeService.findCode(registerRequest.getCode());
+        if(code.isPresent()){
+           if(code.get().getUses() == 'T'){
+               throw new NoCodeOrWasUsedException();
+           }else{
+               code.get().setUses('T');
+           }
+        }else{
+           throw new NoCodeOrWasUsedException();
+        }
+
+
         User user = new User(registerRequest.getUsername(),
                 encoder.encode(registerRequest.getPassword()));
 
-        log.error(encoder.encode(registerRequest.getPassword()));
+        log.info(encoder.encode(registerRequest.getPassword()));
 
         Set<String> strRoles = registerRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -107,6 +131,7 @@ public class AuthController {
         }
         user.setRoles(roles);
         userRepository.save(user);
+        codeService.save(code.get());
         return ResponseEntity.ok("Done");
     }
 

@@ -22,18 +22,25 @@ public class MovieTimeWatched {
     private Long Id;
 
 
-    @Column(name="PATH", unique = true)
-    private String pathFile;
+    @Column(name="PATH")
+    private String filePath;
 
     @Column(name="TIME_WATCHED")
     private Long timeWatched;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PROFILE_ID")
+    private Profile profile;
 
     @Override
     public String toString() {
         return "MovieTimeWatched{" +
-                "pathFile='" + pathFile + '\'' +
+                "filePath='" + filePath + '\'' +
                 ", timeWatched=" + timeWatched +
                 '}';
+    }
+
+    public static MovieTimeWatched empty(){
+        return  new MovieTimeWatched();
     }
 }
