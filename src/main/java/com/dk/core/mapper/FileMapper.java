@@ -4,6 +4,7 @@ package com.dk.core.mapper;
 
 
 import com.dk.core.constants.FileType;
+import com.dk.core.domain.MovieTimeWatchedDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.apache.commons.io.FilenameUtils;
@@ -33,6 +34,7 @@ public class FileMapper {
         }
         return FileType.FILE;
     }
+
 
     public List<String> getListFileByPath(String path)  {
         File[] f = new File(path).listFiles();

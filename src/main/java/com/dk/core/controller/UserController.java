@@ -3,17 +3,14 @@ package com.dk.core.controller;
 import com.dk.core.domain.Profile;
 import com.dk.core.domain.ProfileDTO;
 import com.dk.core.mapper.ProfileMapper;
-import com.dk.core.payload.ProfileRequest;
 import com.dk.core.service.ProfileService;
-import com.dk.security.jwt.JwtUtils;
-import com.dk.security.login.domain.User;
-import com.dk.security.login.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -30,9 +27,15 @@ public class UserController {
         this.profileMapper = profileMapper;
     }
 
-    @PostMapping("/addOrUpdateProfile")
-    public ResponseEntity<ProfileDTO> addOrUpdateProfile(@RequestBody ProfileRequest profileRequest, HttpServletRequest request){
-        Profile profile = profileMapper.mapToProfile(profileRequest, request );
+    @PostMapping("/addProfile")
+    public void addProfile(@Valid @RequestBody ProfileDTO profileDTO, HttpServletRequest request){
+        Profile profile = profileMapper.mapToProfile(profileDTO,request, false);
+        profileService.save(profile);
+    }
+
+    @PutMapping("/updateProfile")
+    public ResponseEntity<ProfileDTO> updateProfile(@Valid @RequestBody ProfileDTO profileDTO, HttpServletRequest request){
+        Profile profile = profileMapper.mapToProfile(profileDTO,request, true);
         return ResponseEntity.ok().body(profileMapper.mapToProfileDTO(profileService.save(profile)));
     }
 
@@ -40,6 +43,12 @@ public class UserController {
     public ResponseEntity<List<ProfileDTO>> getProfileList(HttpServletRequest request){
         String userName = profileMapper.getUserNameFromRequest(request);
         return ResponseEntity.ok().body( profileMapper.mapToProfileDtoList(profileService.getProfilesByUserName(userName)));
+    }
+
+    @DeleteMapping("/deleteProfile")
+    public ResponseEntity<String> deleteProfile(@RequestParam Long profileId, HttpServletRequest request){
+        profileService.deleteProfile(profileId);
+        return ResponseEntity.ok("Done");
     }
 
 }

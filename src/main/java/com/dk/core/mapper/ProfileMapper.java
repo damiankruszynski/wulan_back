@@ -2,8 +2,8 @@ package com.dk.core.mapper;
 
 import com.dk.core.domain.Profile;
 import com.dk.core.domain.ProfileDTO;
+import com.dk.core.exception.NoProfileException;
 import com.dk.core.exception.NoUserException;
-import com.dk.core.payload.ProfileRequest;
 import com.dk.core.service.ProfileService;
 import com.dk.security.jwt.JwtUtils;
 import com.dk.security.login.domain.User;
@@ -35,15 +35,20 @@ public class ProfileMapper {
         return new ProfileDTO(profile.getId(), profile.getProfileName(),profile.getUser());
     }
 
-    public Profile mapToProfile(ProfileRequest profileRequest, HttpServletRequest request){
+    public Profile mapToProfile(ProfileDTO profileDTO, HttpServletRequest request, boolean isUpdate){
         String username = getUserNameFromRequest(request);
         Optional<User> user = userRepository.findByUsername(username);
         if(user.isPresent()){
-            Optional<Profile> profile = profileService.getProfileByProfileNameAndUser(user.get(), profileRequest.getProfileName());
+            Optional<Profile> profile = profileService.getProfileByProfileIdAndUserId(user.get().getId(), profileDTO.getProfileId());
             if(profile.isPresent()){
+                profile.get().setProfileName(profileDTO.getProfileName());
                 return profile.get();
-            }else{
-               return  new Profile(null, profileRequest.getProfileName(), user.get(), null);
+            }
+            else if(isUpdate){
+                throw new NoProfileException();
+            }
+            else{
+               return  new Profile(null, profileDTO.getProfileName(), user.get(), null);
             }
         }else{
             throw new NoUserException();

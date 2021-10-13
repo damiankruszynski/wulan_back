@@ -32,11 +32,20 @@ public class MovieTimeWatched {
     @JoinColumn(name = "PROFILE_ID")
     private Profile profile;
 
+    @Column(name = "IS_WATCHED")
+    private boolean isWatched = false;
+
+    @Column(name = "TIME_IN_SECONDS")
+    private Long movieTimeInSeconds;
+
     @Override
     public String toString() {
         return "MovieTimeWatched{" +
-                "filePath='" + filePath + '\'' +
+                "Id=" + Id +
+                ", filePath='" + filePath + '\'' +
                 ", timeWatched=" + timeWatched +
+                ", isWatched=" + isWatched +
+                ", movieTimeInSeconds=" + movieTimeInSeconds +
                 '}';
     }
 

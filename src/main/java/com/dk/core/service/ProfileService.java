@@ -2,6 +2,7 @@ package com.dk.core.service;
 
 
 import com.dk.core.domain.Profile;
+import com.dk.core.exception.NoProfileException;
 import com.dk.core.exception.NoUserException;
 import com.dk.core.repository.ProfileRepository;
 import com.dk.security.login.domain.User;
@@ -9,6 +10,7 @@ import com.dk.security.login.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +37,18 @@ public class ProfileService {
         return profileRepository.findByProfileNameAndUser(profileName, user);
     }
 
-    public boolean isExist(String profileName){
-        return profileRepository.findByProfileName(profileName).isPresent();
+    public Optional<Profile> getProfileByProfileIdAndUserId(Long userId, Long profileID){
+        return profileRepository.findByIdAndUserId(profileID, userId);
+    }
+
+    @Transactional
+    public void deleteProfile(Long profileId){
+        Optional<Profile> profile = profileRepository.findById(profileId);
+        if(profile.isPresent()) {
+            profileRepository.deleteById(profile.get().getId());
+        }else{
+            throw new NoProfileException();
+        }
     }
 
     public List<Profile> getProfilesByUserName(String userName){

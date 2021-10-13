@@ -51,7 +51,6 @@ public class User {
 
     @OneToMany(targetEntity = Profile.class,
             mappedBy = "user",
-            cascade = CascadeType.ALL,
             fetch = FetchType.EAGER)
     private List<Profile> profileList;
 

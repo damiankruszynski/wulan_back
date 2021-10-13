@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name="PROFILE")
@@ -35,8 +36,24 @@ public class Profile {
     @OneToMany(targetEntity = MovieTimeWatched.class,
             mappedBy = "profile",
             cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            orphanRemoval = true)
     private List<MovieTimeWatched> movieTimeWatchedList;
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Profile)) return false;
+
+        Profile profile = (Profile) o;
+
+        return Objects.equals(id, profile.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 
     @Override
     public String toString() {
