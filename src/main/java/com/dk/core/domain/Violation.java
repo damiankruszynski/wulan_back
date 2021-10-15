@@ -1,4 +1,4 @@
-package com.dk.core.payload;
+package com.dk.core.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

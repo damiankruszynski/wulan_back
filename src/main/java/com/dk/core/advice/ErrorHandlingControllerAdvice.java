@@ -1,7 +1,7 @@
 package com.dk.core.advice;
 
 import com.dk.core.payload.ValidationErrorResponse;
-import com.dk.core.payload.Violation;
+import com.dk.core.domain.Violation;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;

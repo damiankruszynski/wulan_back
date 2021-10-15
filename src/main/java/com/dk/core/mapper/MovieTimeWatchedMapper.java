@@ -34,7 +34,6 @@ public class MovieTimeWatchedMapper {
             if(movieTimeWatchedOptional.isPresent()){
                 IdForMovie = movieTimeWatchedOptional.get().getId();
             }
-            log.info(movieTimeWatchedDTO.toString());
             return new MovieTimeWatched(IdForMovie, movieTimeWatchedDTO.getFilePath(),
                     movieTimeWatchedDTO.getTimeWatched(), profile.get(), movieTimeWatchedDTO.isWatched(), movieTimeWatchedDTO.getMovieTimeInSeconds());
         }else{

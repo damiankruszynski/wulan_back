@@ -7,8 +7,10 @@ import com.dk.core.mapper.MovieTimeWatchedMapper;
 import com.dk.core.service.MovieTimeWatchedService;
 import com.dk.core.service.VideoStreamService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.NoSuchElementException;
 
 

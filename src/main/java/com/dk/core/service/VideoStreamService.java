@@ -1,9 +1,11 @@
 package com.dk.core.service;
 
+import com.dk.core.constants.FileType;
 import com.dk.core.mapper.FileMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,19 @@ public class VideoStreamService {
         this.fileMapper = fileMapper;
     }
 
+    private String getContentType(String filePath){
+        FileType fileType = fileMapper.setFileType(filePath);
+        if(fileType.equals(FileType.MP4)){
+            return VIDEO_CONTENT + fileType;
+        }
+        else if(fileType.equals(FileType.PICTURE)) {
+            return MediaType.IMAGE_JPEG_VALUE;
+        }
+        else{
+            return "";
+        }
+    }
+
     /**
      * Prepare the content.
      *
@@ -43,7 +58,7 @@ public class VideoStreamService {
             fileSize = getFileSize(filePath);
             if (range == null) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .header(CONTENT_TYPE, VIDEO_CONTENT + fileMapper.setFileType(filePath))
+                        .header(CONTENT_TYPE, getContentType(filePath))
                         .header(CONTENT_LENGTH, String.valueOf(fileSize))
                         .body(readByteRange(filePath, rangeStart, fileSize - 1)); // Read the object and convert it as bytes
             }

@@ -32,6 +32,9 @@ public class FileMapper {
         else if(extension.equals("MP4")){
             return FileType.MP4;
         }
+        else if(extension.equals("JPEG") | extension.equals("JPG")){
+            return FileType.PICTURE;
+        }
         return FileType.FILE;
     }
 

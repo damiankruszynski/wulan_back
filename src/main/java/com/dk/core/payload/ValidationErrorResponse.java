@@ -1,5 +1,6 @@
 package com.dk.core.payload;
 
+import com.dk.core.domain.Violation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

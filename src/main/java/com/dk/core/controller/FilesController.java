@@ -9,6 +9,7 @@ import com.dk.core.payload.FileResponse;
 import com.dk.core.service.MovieTimeWatchedService;
 import com.dk.core.service.ProfileService;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.NonUniqueResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -52,16 +53,18 @@ public class FilesController {
                 .map( s -> new FileResponse(fileMapper.getFileName(s), fileMapper.getTypeOfFileByName(s), s,
                         fileMapper.getSubPathForFile(fileMapper.getFileName(s),path), null))
                 .collect(Collectors.toList());
-        ResponseList.stream().forEach(f -> {
-            if(f.getFileType() == FileType.MP4.name()){
-                try{
-                MovieTimeWatchedDTO movieTimeWatchedDTO = movieTimeWatchedMapper.mapToMovieTimeWatchedDTO(
-                        movieTimeWatchedService.findByPathAndProfile(f.getFilePath(),profile.get()).orElseGet((null)));
-                f.setMovieTimeWatchedDTO(movieTimeWatchedDTO);
-                }catch (NullPointerException nullPointerException){
-                    log.info(nullPointerException.getMessage());
+        try {
+            ResponseList.stream().forEach(f -> {
+                if (f.getFileType() == FileType.MP4.name()) {
+                    MovieTimeWatchedDTO movieTimeWatchedDTO = movieTimeWatchedMapper.mapToMovieTimeWatchedDTO(
+                            movieTimeWatchedService.findByPathAndProfile(f.getFilePath(), profile.get()).orElse((null)));
+                    f.setMovieTimeWatchedDTO(movieTimeWatchedDTO);
                 }
-            }});
+            });
+        }
+        catch (Exception e){
+            log.info(e.getMessage());
+        }
        return ResponseList;
     }
 
