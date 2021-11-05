@@ -11,8 +11,13 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Slf4j
@@ -43,6 +48,17 @@ public class FileMapper {
         File[] f = new File(path).listFiles();
         if(f == null){ return new ArrayList<>();}
         return Arrays.stream(f).map(File::getAbsolutePath).collect(Collectors.toList());
+    }
+
+    public List<String> getListFileByPathDeep(String path)  {
+        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+            List<String> result = walk.filter(Files::isRegularFile)
+                    .map(x -> x.toString()).collect(Collectors.toList());
+            return result;
+        } catch (IOException e) {
+            log.info(e.getMessage());
+        }
+        return new ArrayList<>();
     }
 
     public String getFileName(String filePath){

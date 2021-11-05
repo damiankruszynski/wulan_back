@@ -8,13 +8,16 @@ import com.dk.core.mapper.MovieTimeWatchedMapper;
 import com.dk.core.payload.FileResponse;
 import com.dk.core.service.MovieTimeWatchedService;
 import com.dk.core.service.ProfileService;
+import com.dk.core.service.VideoStreamService;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.NonUniqueResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 @Slf4j
@@ -24,17 +27,19 @@ public class FilesController {
 
     @Autowired
     public FilesController(FileMapper fileMapper, MovieTimeWatchedMapper movieTimeWatchedMapper, MovieTimeWatchedService movieTimeWatchedService,
-                            ProfileService profileService){
+                            ProfileService profileService, VideoStreamService videoStreamService){
         this.fileMapper = fileMapper;
         this.movieTimeWatchedMapper = movieTimeWatchedMapper;
         this.movieTimeWatchedService = movieTimeWatchedService;
         this.profileService = profileService;
+        this.videoStreamService = videoStreamService;
     }
 
     private final FileMapper fileMapper;
     private final MovieTimeWatchedMapper movieTimeWatchedMapper;
     private final MovieTimeWatchedService movieTimeWatchedService;
     private final ProfileService profileService;
+    private final VideoStreamService videoStreamService;
 
     @Value("${publicFolder}")
     private String pathToPublicFolder;
@@ -50,6 +55,7 @@ public class FilesController {
         }
         Optional<Profile> profile = profileService.getProfileById(profileId);
         List<FileResponse> ResponseList = listFileByPath.stream()
+                .filter(s -> !fileMapper.getFileName(s).toUpperCase(Locale.ROOT).equals("PREWIEW"))
                 .map( s -> new FileResponse(fileMapper.getFileName(s), fileMapper.getTypeOfFileByName(s), s,
                         fileMapper.getSubPathForFile(fileMapper.getFileName(s),path), null))
                 .collect(Collectors.toList());

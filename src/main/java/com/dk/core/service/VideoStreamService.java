@@ -3,6 +3,7 @@ package com.dk.core.service;
 import com.dk.core.constants.FileType;
 import com.dk.core.mapper.FileMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,11 +38,10 @@ public class VideoStreamService {
         if(fileType.equals(FileType.MP4)){
             return VIDEO_CONTENT + fileType;
         }
-        else if(fileType.equals(FileType.PICTURE)) {
+        else if(fileType.equals(FileType.PICTURE)){
             return MediaType.IMAGE_JPEG_VALUE;
-        }
-        else{
-            return "";
+        }else {
+            return VIDEO_CONTENT + fileType;
         }
     }
 
@@ -86,6 +89,27 @@ public class VideoStreamService {
                 .body(data);
 
 
+    }
+
+    private BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        graphics2D.dispose();
+        return resizedImage;
+    }
+
+
+    public byte[] preparePreview(String filePath) throws IOException {
+        Path path = Paths.get(filePath);
+        InputStream in = Files.newInputStream(path);
+        ImageIO.setUseCache(false);
+        BufferedImage img = ImageIO.read(in); // load image
+        BufferedImage scaledImg = resizeImage(img, 300, 300);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(scaledImg, "png", baos);
+        byte[] bytes = baos.toByteArray();
+        return bytes;
     }
 
     /**
