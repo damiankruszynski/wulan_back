@@ -24,7 +24,7 @@ public class MovieTimeWatchedDTO {
     @NotNull(message = "profileId can't be empty")
     private Long profileId;
     @JsonProperty
-    private boolean isWatched;
+    private boolean watched;
     @JsonProperty
     private Long  movieTimeInSeconds;
 
@@ -33,7 +33,6 @@ public class MovieTimeWatchedDTO {
         this.filePath = filePath;
         this.timeWatched = timeWatched;
         this.profileId = profileId;
-        this.isWatched = false;
     }
 
 
@@ -47,7 +46,7 @@ public class MovieTimeWatchedDTO {
                 "filePath='" + filePath + '\'' +
                 ", timeWatched=" + timeWatched +
                 ", profileId=" + profileId +
-                ", isWatched=" + isWatched +
+                ", watched=" + watched +
                 ", movieTimeInSeconds=" + movieTimeInSeconds +
                 '}';
     }

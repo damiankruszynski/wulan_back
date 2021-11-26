@@ -33,7 +33,7 @@ public class MovieTimeWatched {
     private Profile profile;
 
     @Column(name = "IS_WATCHED")
-    private boolean isWatched = false;
+    private boolean watched = false;
 
     @Column(name = "TIME_IN_SECONDS")
     private Long movieTimeInSeconds;
@@ -44,7 +44,7 @@ public class MovieTimeWatched {
                 "Id=" + Id +
                 ", filePath='" + filePath + '\'' +
                 ", timeWatched=" + timeWatched +
-                ", isWatched=" + isWatched +
+                ", isWatched=" + watched +
                 ", movieTimeInSeconds=" + movieTimeInSeconds +
                 '}';
     }
